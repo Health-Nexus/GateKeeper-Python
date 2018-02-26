@@ -5,8 +5,8 @@ import json
 from web3 import Web3, HTTPProvider
 from ethereum.utils import ecrecover_to_pub, sha3
 from eth_utils.hexidecimal import encode_hex, decode_hex, add_0x_prefix
-
-from .models import Episodes
+import codecs
+# from .models import Episodes
 
 web3 = Web3(HTTPProvider('https://rinkeby.infura.io'))
 contractAddress = '0x1ba6cea196f186e6ee2d8ac46308e6d18018e910'
@@ -18,11 +18,32 @@ def index(request):
     return HttpResponse("Hello, world. You're at the gatekeeper")
 
 def data(request, address_id, signature_id, message_hash, parameter, key):
-    print(w3.eth)
+    keyHex=key#web3.fromAscii(key)
+    parameterHex=web3.fromAscii(parameter)
+    keyHexData=keyHex[2:]
+    parameterHexData=parameterHex[2:]
 
+    # key2=keyHexData.decode("hex")
+    # key2=codecs.decode(keyHexData, "hex_codec")
+    # parameter2=codecs.decode(parameterHexData, "hex_codec")
+    # codecs.decode(b"4f6c6567", "hex_codec")
+    # parameter2=parameterHexData.decode("hex")
+    key2=web3.toBytes(hexstr=keyHex)
+    parameter2=web3.toBytes(hexstr=parameterHex)
+    # key2=web3.fromAscii(key)
+    # parameter2=web3.fromAscii(parameter)
+    # key2=str.encode(key)
+    # parameter2=str.encode(parameter)
+    print(key,parameter)
+    print(web3.version.api)
+    print(':                  translate              :')
+    print(key2,parameter2)
+    print(':                  translate              :')
+
+    print ('contract: ',fContract.call().getKeyData(key2,parameter2))
 
     print(':                  inputs              :')
-    print ('contract: ',fContract.call().getKeyData(key,parameter))
+    print ('contract: ',fContract.call().getKeyData(key2,parameter2))
     print(address_id)
     print(message_hash)
     print(signature_id)
@@ -44,14 +65,15 @@ def data(request, address_id, signature_id, message_hash, parameter, key):
     print(signer)
     print(encode_hex(sha3(pubkey)[-20:]))
     print(':                  pubkey              :')
-    accountID=fContract.call().getKeyData(key,parameter)
-    episodes=Episodes.objects.filter(account_number=accountID)
-    print(episodes)
+    accountID=fContract.call().getKeyData(key,parameter).decode("hex")
+    # episodes=Episodes.objects.filter(account_number=accountID)
+    # print(episodes)
     # signer = w3.eth.account.recover(message_hash, signature=signature_id)
     if encode_hex(sha3(pubkey)[-20:]) == signer:
         print(':                  success              :')
-
         return HttpResponse("You're looking at %s , %s , %s . Here is the data %s" % (address_id, signature_id, parameter,episodes))
+
+        # return HttpResponse("You're looking at %s , %s , %s . Here is the data %s" % (address_id, signature_id, parameter,episodes))
     else:
         print(':                  fail              :')
         return HttpResponse("Invalid User")
