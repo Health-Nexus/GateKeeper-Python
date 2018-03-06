@@ -48,6 +48,7 @@ def data(request, address_id, signature_id, message_hash, parameter, key):
     result=Details.objects.filter(account_number=accountID)
 
     dataResult = serializers.serialize('json', result)
+    print('last check', owner, ' ', signer, ' ', encode_hex(sha3(pubkey)[-20:]))
     if encode_hex(sha3(pubkey)[-20:]) == signer and owner:
         print(':                  success              :')
         return JsonResponse(dataResult, safe=False)
