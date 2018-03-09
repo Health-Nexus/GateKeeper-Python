@@ -10,10 +10,11 @@ from eth_utils.hexidecimal import encode_hex, decode_hex, add_0x_prefix
 import codecs
 from gatekeeper.models import Details
 from django.forms.models import model_to_dict
+from django.conf import settings
 
 web3 = Web3(HTTPProvider('https://rinkeby.infura.io'))
-contractAddress = '0x1ba6cea196f186e6ee2d8ac46308e6d18018e910'
-thisServiceID = '0xae664a54bc86179f45e13289d2179d5620e0bffba06342582a4f9c5aa1072ee1'
+contractAddress = getattr(settings, 'CONTRACT_ADDRESS') 
+thisServiceID = getattr(settings, 'SERVICE_ID') 
 with open('./gatekeeper/factoryDRS.json', 'r') as abi_definition:
     abi = json.load(abi_definition)
 fContract = web3.eth.contract(contractAddress,abi=abi)
