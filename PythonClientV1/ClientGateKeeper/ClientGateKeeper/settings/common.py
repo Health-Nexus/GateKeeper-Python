@@ -91,10 +91,10 @@ WSGI_APPLICATION = 'ClientGateKeeper.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'drsdb',
-        'USER': 'drs',
-        'PASSWORD': 'abcd12345',
+        'ENGINE': 'mysql',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '',
     }
