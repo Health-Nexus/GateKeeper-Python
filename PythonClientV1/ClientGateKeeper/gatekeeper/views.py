@@ -13,6 +13,7 @@ from django.forms.models import model_to_dict
 
 web3 = Web3(HTTPProvider('https://rinkeby.infura.io'))
 contractAddress = '0x1ba6cea196f186e6ee2d8ac46308e6d18018e910'
+thisServiceID = '0xae664a54bc86179f45e13289d2179d5620e0bffba06342582a4f9c5aa1072ee1'
 with open('./gatekeeper/factoryDRS.json', 'r') as abi_definition:
     abi = json.load(abi_definition)
 fContract = web3.eth.contract(contractAddress,abi=abi)
@@ -45,20 +46,20 @@ def data(request, address_id, signature_id, message_hash, parameter, key):
     hexId=web3.fromAscii(accountID)
     accountID=int(hexId.rstrip("0"), 16)
 
-    result=Details.objects.filter(account_number=accountID)
+    #Get the service this key belongs too
+    keyData=fContract.call().getKey(key2)
+    serviceFromKey = web3.fromAscii(keyData[4])
 
     dataResult = serializers.serialize('json', result)
     print('last check', owner, ' ', signer, ' ', encode_hex(sha3(pubkey)[-20:]))
-    if encode_hex(sha3(pubkey)[-20:]) == signer and owner:
+    if thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == signer and owner:
         print(':                  success              :')
+        result=Details.objects.filter(account_number=accountID)
+        dataResult = serializers.serialize('json', result)
         return JsonResponse(dataResult, safe=False)
     else:
         print(':                  fail              :')
-        return JsonResponse({error:"Invalid User"})
-
-
-
-
+        return JsonResponse({'status':'false','message':'Invalid user'}, status=500)
 
 
 
