@@ -13,8 +13,8 @@ from django.forms.models import model_to_dict
 from django.conf import settings
 
 web3 = Web3(HTTPProvider('https://rinkeby.infura.io'))
-contractAddress = getattr(settings, 'CONTRACT_ADDRESS') 
-thisServiceID = getattr(settings, 'SERVICE_ID') 
+contractAddress = getattr(settings, 'CONTRACT_ADDRESS')
+thisServiceID = getattr(settings, 'SERVICE_ID')
 with open('./gatekeeper/factoryDRS.json', 'r') as abi_definition:
     abi = json.load(abi_definition)
 fContract = web3.eth.contract(contractAddress,abi=abi)
@@ -51,8 +51,6 @@ def data(request, address_id, signature_id, message_hash, parameter, key):
     keyData=fContract.call().getKey(key2)
     serviceFromKey = web3.fromAscii(keyData[4])
 
-    dataResult = serializers.serialize('json', result)
-    print('last check', owner, ' ', signer, ' ', encode_hex(sha3(pubkey)[-20:]))
     if thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == signer and owner:
         print(':                  success              :')
         result=Details.objects.filter(account_number=accountID)

@@ -28,7 +28,14 @@
     7.  Database migration.  To either use our database or your own run python manage.py makemigrations gatekeeper and python manage.py migrate.  This will load what ever tables you have into psql.  For other setups or downloading your DBs into django please review the Django manuals.
 
 # Running
-    1. python manage.py runserver
+    1. To Determine your environment use, which defaults to dev
+          export APP_ENV=production
+
+    2.  You can configure production mode by setting your variables like so:
+          export DRS_SECRET_KEY={Secret Key}
+          export DRS_CONTRACT_ADDRESS={Address}
+          export DRS_SERVICE_ID={Address}
+    3. python manage.py runserver
 
 
 # Summary
