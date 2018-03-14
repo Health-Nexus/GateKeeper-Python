@@ -2,6 +2,9 @@
 from django.http import HttpResponse, JsonResponse
 import hashlib
 from django.core import serializers
+import base64
+import os
+from wsgiref.util import FileWrapper
 
 import json
 from web3 import Web3, HTTPProvider
@@ -43,23 +46,46 @@ def data(request, address_id, signature_id, message_hash, parameter, key):
     pubkey = ecrecover_to_pub(decode_hex(message_hash), v, r, s)
 
     accountID=fContract.call().getKeyData(key2,parameter2)
+    accountID=accountID.strip()
+    print('image account',accountID,':')
     owner=fContract.call().isKeyOwner(key2,address_id)
     hexId=web3.fromAscii(accountID)
-    accountID=int(hexId.rstrip("0"), 16)
+    if parameter=='account_number':
+        accountID=int(hexId.rstrip("0"), 16)
 
     #Get the service this key belongs too
     keyData=fContract.call().getKey(key2)
     serviceFromKey = web3.fromAscii(keyData[4])
-
-    if thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == signer and owner:
+    print('if statement ',parameter , thisServiceID, serviceFromKey, accountID)
+    if parameter=='account_number' and thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == signer and owner:
         print(':                  success              :')
         result=Details.objects.filter(account_number=accountID)
         dataResult = serializers.serialize('json', result)
         return JsonResponse(dataResult, safe=False)
+    elif parameter=='image' and thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == signer and owner:
+        module_dir = os.path.dirname(__file__)  # get current directory
+        filename=module_dir+'/images/'+accountID
+        filename=filename.strip()
+        filename=filename.strip('\x00')
+        with open(filename, 'rb') as f:
+            print(f)
+            return HttpResponse(base64.b64encode(f.read()),content_type="image/jpeg")
+
+            # return JsonResponse(files, safe=False)
+    elif parameter=='audio' and thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == signer and owner:
+        module_dir = os.path.dirname(__file__)  # get current directory
+        filename=module_dir+'/audio/'+accountID
+        filename=filename.strip()
+        filename=filename.strip('\x00')
+        # with open(filename, 'rb') as f:
+        with open(filename, 'rb') as f:
+            print(f)
+            wrapper = FileWrapper(f)
+            print(wrapper)
+            return HttpResponse(f.read(),content_type="audio/mpeg")
+        # dataResult = serializers.serialize('json', result)
+            # return JsonResponse(files, safe=False)
     else:
         print(':                  fail              :')
         return JsonResponse({'status':'false','message':'Invalid user'}, status=500)
-
-
-
 #
