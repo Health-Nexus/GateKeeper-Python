@@ -5,6 +5,9 @@ from django.core import serializers
 import base64
 import os
 from wsgiref.util import FileWrapper
+import zipfile
+from io import BytesIO
+from wsgiref.util import FileWrapper
 
 import json
 from web3 import Web3, HTTPProvider
@@ -66,24 +69,19 @@ def data(request, address_id, signature_id, message_hash, parameter, key):
         module_dir = os.path.dirname(__file__)  # get current directory
         filename=module_dir+'/images/'+accountID
         filename=filename.strip()
-        filename=filename.strip('\x00')
-        with open(filename, 'rb') as f:
-            print(f)
-            return HttpResponse(base64.b64encode(f.read()),content_type="image/jpeg")
 
-            # return JsonResponse(files, safe=False)
-    elif parameter=='audio' and thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == signer and owner:
-        module_dir = os.path.dirname(__file__)  # get current directory
-        filename=module_dir+'/audio/'+accountID
-        filename=filename.strip()
         filename=filename.strip('\x00')
-        # with open(filename, 'rb') as f:
         with open(filename, 'rb') as f:
             print(f)
-            wrapper = FileWrapper(f)
-            print(wrapper)
-            return HttpResponse(f.read(),content_type="audio/mpeg")
-        # dataResult = serializers.serialize('json', result)
+            response = HttpResponse(f.read())
+            response['Content-Type'] = 'image/jpeg'
+            response['Access-Control-Expose-Headers'] = 'Content-Disposition'
+            response['Content-Disposition'] = 'attachment; filename="'+accountID+'"'
+            response['Content-Length'] = os.path.getsize(filename)
+
+            return response
+            #return HttpResponse(base64.b64encode(f.read()),content_type="image/jpeg")
+
             # return JsonResponse(files, safe=False)
     else:
         print(':                  fail              :')
