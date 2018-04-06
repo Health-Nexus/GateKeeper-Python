@@ -1,6 +1,7 @@
 from django.db import models
 import json
 
+    #TODO Finalize generic model structure
 
 class Details(models.Model):
     account_number = models.IntegerField(default=0)

@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
+    #TODO setup admin page
     path('admin/', admin.site.urls),
     path('gatekeeper/',include('gatekeeper.urls'))
 ]

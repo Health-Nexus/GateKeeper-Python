@@ -18,9 +18,12 @@ from gatekeeper.models import Details
 from django.forms.models import model_to_dict
 from django.conf import settings
 
+#TODO setup to allow user to determine network
 web3 = Web3(HTTPProvider('https://rinkeby.infura.io'))
+
 contractAddress = getattr(settings, 'CONTRACT_ADDRESS')
 thisServiceID = getattr(settings, 'SERVICE_ID')
+
 with open('./gatekeeper/factoryDRS.json', 'r') as abi_definition:
     abi = json.load(abi_definition)
 fContract = web3.eth.contract(contractAddress,abi=abi)
@@ -72,7 +75,10 @@ def data(request, address_id, signature, message_hash, parameter, key_hex):
     account_id=account_id.strip()
     owner=fContract.call().isKeyOwner(key_bytes,address_id)
     hexId=web3.fromAscii(account_id)
-    if parameter=='account_number':
+
+    #TODO setup up to allow for custom parameters
+
+    if parameter == 'account_number':
         account_id=int(hexId.rstrip("0"), 16)
 
     #Get the service this key belongs too
@@ -80,14 +86,17 @@ def data(request, address_id, signature, message_hash, parameter, key_hex):
     serviceFromKey = web3.fromAscii(keyData[4])
 
     #if parameter is an account number it retreives and returns the json object
-    if parameter=='account_number' and thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == address_id and owner:
+    #TODO break into seperate endpoints
+
+    if parameter == 'account_number' and thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == address_id and owner:
         print(':                  success              :')
         result=Details.objects.filter(account_number=account_id)
         dataResult = serializers.serialize('json', result)
         return JsonResponse(dataResult, safe=False)
 
         #if it is a file it sends the filie for download
-    elif parameter=='file' and thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == address_id and owner:
+    elif parameter == 'file' and thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == address_id and owner:
+        #TODO finalize file download
         module_dir = os.path.dirname(__file__)  # get current directory
         filename=module_dir+'/file/'+account_id
         filename=filename.strip()
