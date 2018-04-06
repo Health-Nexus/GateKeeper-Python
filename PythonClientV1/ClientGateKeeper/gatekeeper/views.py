@@ -26,21 +26,40 @@ with open('./gatekeeper/factoryDRS.json', 'r') as abi_definition:
 fContract = web3.eth.contract(contractAddress,abi=abi)
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the gatekeeper")
+            """Index to test connection to server.
 
-def data(request, address_id, signature_id, message_hash, parameter, key):
-    keyHex=key
-    parameterHex=web3.fromAscii(parameter)
-    keyHexData=keyHex[2:]
-    parameterHexData=parameterHex[2:]
+        Tests connection to server
 
+        Args:
+            request: a request object
+        Returns:
+            A successful connection string string
+        """
+    return HttpResponse("Hello, You're at the gatekeeper")
 
-    key2=web3.toBytes(hexstr=keyHex)
-    parameter2=web3.toBytes(hexstr=parameterHex)
+def data(request, address_id, signature, message_hash, parameter, key_hex):
+        """Fetches rows data from sql database or file folder.
 
-    signer = address_id
-    message_hash =message_hash
-    signature = signature_id
+    Validates user and request agains the blockchain.
+    If passes either returns json object or file based on request
+
+    Args:
+        request: a request object
+        address_id: The address id of the address_id
+        signature: The requesters signature.
+        message_hash:  The hashed message.  Used for signature verification
+        parameter: the parameter to use to determine the database and parameter
+        key:  the id of the key to check against
+
+    Returns:
+        A json object containing data or a file to the requestor
+    """
+    parameter_hex=web3.fromAscii(parameter)
+    parameter_hex_data=parameter_hex[2:]
+    key_bytes=web3.toBytes(hexstr=key_hex)
+    parameter_bytes=web3.toBytes(hexstr=parameter_hex)
+
+    #recover public key
     r = int(signature[0:66], 16)
     s = int(add_0x_prefix(signature[66:130]), 16)
     v = int(add_0x_prefix(signature[130:132]), 16)
@@ -48,42 +67,39 @@ def data(request, address_id, signature_id, message_hash, parameter, key):
         v += 27
     pubkey = ecrecover_to_pub(decode_hex(message_hash), v, r, s)
 
-    accountID=fContract.call().getKeyData(key2,parameter2)
-    accountID=accountID.strip()
-    print('image account',accountID,':')
-    owner=fContract.call().isKeyOwner(key2,address_id)
-    hexId=web3.fromAscii(accountID)
+    #retrieves information from key based on parameter
+    account_id=fContract.call().getKeyData(key_bytes,parameter_bytes)
+    account_id=account_id.strip()
+    owner=fContract.call().isKeyOwner(key_bytes,address_id)
+    hexId=web3.fromAscii(account_id)
     if parameter=='account_number':
-        accountID=int(hexId.rstrip("0"), 16)
+        account_id=int(hexId.rstrip("0"), 16)
 
     #Get the service this key belongs too
-    keyData=fContract.call().getKey(key2)
+    keyData=fContract.call().getKey(key_bytes)
     serviceFromKey = web3.fromAscii(keyData[4])
-    print('if statement ',parameter , thisServiceID, serviceFromKey, accountID)
-    if parameter=='account_number' and thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == signer and owner:
+
+    #if parameter is an account number it retreives and returns the json object
+    if parameter=='account_number' and thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == address_id and owner:
         print(':                  success              :')
-        result=Details.objects.filter(account_number=accountID)
+        result=Details.objects.filter(account_number=account_id)
         dataResult = serializers.serialize('json', result)
         return JsonResponse(dataResult, safe=False)
-    elif parameter=='image' and thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == signer and owner:
-        module_dir = os.path.dirname(__file__)  # get current directory
-        filename=module_dir+'/images/'+accountID
-        filename=filename.strip()
 
+        #if it is a file it sends the filie for download
+    elif parameter=='file' and thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == address_id and owner:
+        module_dir = os.path.dirname(__file__)  # get current directory
+        filename=module_dir+'/file/'+account_id
+        filename=filename.strip()
         filename=filename.strip('\x00')
         with open(filename, 'rb') as f:
             print(f)
             response = HttpResponse(f.read())
             response['Content-Type'] = 'image/jpeg'
             response['Access-Control-Expose-Headers'] = 'Content-Disposition'
-            response['Content-Disposition'] = 'attachment; filename="'+accountID+'"'
+            response['Content-Disposition'] = 'attachment; filename="'+account_id+'"'
             response['Content-Length'] = os.path.getsize(filename)
-
             return response
-            #return HttpResponse(base64.b64encode(f.read()),content_type="image/jpeg")
-
-            # return JsonResponse(files, safe=False)
     else:
         print(':                  fail              :')
         return JsonResponse({'status':'false','message':'Invalid user'}, status=500)
-#
