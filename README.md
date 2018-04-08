@@ -28,14 +28,16 @@
     7.  Database migration.  If you choose to use our database python manage.py migrate or, if there are issues to this being an early project, manually go in and create the tables.  This will load what ever tables you have into psql.  For other setups or downloading your DBs into django please review the Django manuals, but you can manually change the code in the file or setup a migration with 'un python manage.py makemigrations gatekeeper'.
 
 # Running
-    1. To Determine your environment use, which defaults to dev
+    1.  To activate your virtual environment use the 'workon' command with the name of your environment.
+
+    2. To Determine your environment use, which defaults to dev
           export APP_ENV=production
 
-    2.  You can configure production mode by setting your variables like so:
+    3.  You can configure production mode by setting your variables like so:
           export DRS_SECRET_KEY={Secret Key}
           export DRS_CONTRACT_ADDRESS={Address}
           export DRS_SERVICE_ID={Address}
-    3. python manage.py runserver
+    4. python manage.py runserver
 
 
 # Summary

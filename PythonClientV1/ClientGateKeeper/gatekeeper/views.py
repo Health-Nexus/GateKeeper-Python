@@ -29,19 +29,19 @@ with open('./gatekeeper/factoryDRS.json', 'r') as abi_definition:
 fContract = web3.eth.contract(contractAddress,abi=abi)
 
 def index(request):
-            """Index to test connection to server.
+    """Index to test connection to server.
 
-        Tests connection to server
+    Tests connection to server
 
-        Args:
-            request: a request object
-        Returns:
-            A successful connection string string
-        """
+    Args:
+        request: a request object
+    Returns:
+        A successful connection string string
+    """
     return HttpResponse("Hello, You're at the gatekeeper")
 
 def data(request, address_id, signature, message_hash, parameter, key_hex):
-        """Fetches rows data from sql database or file folder.
+    """Fetches rows data from sql database or file folder.
 
     Validates user and request agains the blockchain.
     If passes either returns json object or file based on request
