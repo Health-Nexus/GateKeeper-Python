@@ -104,7 +104,7 @@ def data(request, address_id, signature, message_hash, parameter, key_hex):
         with open(filename, 'rb') as f:
             print(f)
             response = HttpResponse(f.read())
-            response['Content-Type'] = 'image/jpeg'
+            response['Content-Type'] = 'application/octet-stream'
             response['Access-Control-Expose-Headers'] = 'Content-Disposition'
             response['Content-Disposition'] = 'attachment; filename="'+account_id+'"'
             response['Content-Length'] = os.path.getsize(filename)
