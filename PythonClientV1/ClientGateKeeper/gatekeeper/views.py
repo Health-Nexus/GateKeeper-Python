@@ -102,10 +102,10 @@ def data(request, address_id, signature, message_hash, parameter, key_hex):
         filename=filename.strip()
         filename=filename.strip('\x00')
         with open(filename, 'rb') as f:
-            print(f)
             response = HttpResponse(f.read())
             response['Content-Type'] = 'application/octet-stream'
             response['Access-Control-Expose-Headers'] = 'Content-Disposition'
+            response['responseType'] = 'application/download'
             response['Content-Disposition'] = 'attachment; filename="'+account_id+'"'
             response['Content-Length'] = os.path.getsize(filename)
             return response
