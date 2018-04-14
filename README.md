@@ -44,6 +44,7 @@
   To create a new admin use the command   and follow the prompts to set a username and password
     $ python manage.py createsuperuser
   Then login to the admin page at http://127.0.0.1:8000/admin/
+  You can use this to view, manage and update your data and database.
 
 
 # Summary
