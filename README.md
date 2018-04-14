@@ -39,6 +39,12 @@
           export DRS_SERVICE_ID={Address}
     4. python manage.py runserver
 
+# Administration
+  TODO:  Included more details on Administration
+  To create a new admin use the command   and follow the prompts to set a username and password
+    $ python manage.py createsuperuser
+  Then login to the admin page at http://127.0.0.1:8000/admin/
+
 
 # Summary
   this code allows you to pass paramaters to the gatekeeper endpoint as so
