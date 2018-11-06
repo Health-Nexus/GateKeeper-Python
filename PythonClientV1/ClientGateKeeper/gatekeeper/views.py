@@ -12,7 +12,7 @@ from wsgiref.util import FileWrapper
 import json
 from web3 import Web3, HTTPProvider
 from ethereum.utils import ecrecover_to_pub, sha3
-from eth_utils.hexidecimal import encode_hex, decode_hex, add_0x_prefix
+from eth_utils import encode_hex, decode_hex, add_0x_prefix
 import codecs
 from gatekeeper.models import Details
 from django.forms.models import model_to_dict
