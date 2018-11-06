@@ -15,10 +15,10 @@ CONTRACT_ADDRESS = os.environ.get('DRS_CONTRACT_ADDRESS',None)
 if not CONTRACT_ADDRESS:
     raise ValueError('You must have "CONTRACT_ADDRESS" variable')
 
-# DRS Service ID
-SERVICE_ID = os.environ.get('DRS_SERVICE_ID',None)
-if not SERVICE_ID:
-    raise ValueError('You must have "SERVICE_ID" variable')
+# DRS Service ID - possibly get this from database
+SERVICE_IDS = ['0xa2e73b1bae8003a768b7876e021838e060e36d5bf80bf425652ef9381fb2b7e1','0xa2e73b1bae8003a768b7876e021838e060e36d5bf80bf425652ef9381fb2b7e1']
+if not SERVICE_IDS:
+    raise ValueError('You must have "SERVICE_IDS" variable')
 
 # Database credentials
 DATABASES = {

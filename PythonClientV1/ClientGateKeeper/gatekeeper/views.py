@@ -22,7 +22,7 @@ from django.conf import settings
 web3 = Web3(HTTPProvider('https://rinkeby.infura.io'))
 
 contractAddress = getattr(settings, 'CONTRACT_ADDRESS')
-thisServiceID = getattr(settings, 'SERVICE_ID')
+thisServices = set(getattr(settings, 'SERVICE_IDS'))
 
 with open('./gatekeeper/factoryDRS.json', 'r') as abi_definition:
     abi = json.load(abi_definition)
@@ -88,14 +88,14 @@ def data(request, address_id, signature, message_hash, parameter, key_hex):
     #if parameter is an account number it retreives and returns the json object
     #TODO break into seperate endpoints
 
-    if parameter == 'account_number' and thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == address_id and owner:
+    if parameter == 'account_number' and serviceFromKey in thisServices and encode_hex(sha3(pubkey)[-20:]) == address_id and owner:
         print(':                  success              :')
         result=Details.objects.filter(account_number=account_id)
         dataResult = serializers.serialize('json', result)
         return JsonResponse(dataResult, safe=False)
 
         #if it is a file it sends the filie for download
-    elif parameter == 'file' and thisServiceID == serviceFromKey and encode_hex(sha3(pubkey)[-20:]) == address_id and owner:
+    elif parameter == 'file' and serviceFromKey in thisServices and encode_hex(sha3(pubkey)[-20:]) == address_id and owner:
         #TODO finalize file download
         module_dir = os.path.dirname(__file__)  # get current directory
         filename=module_dir+'/file/'+account_id
