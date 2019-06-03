@@ -16,7 +16,7 @@ if not CONTRACT_ADDRESS:
     raise ValueError('You must have "CONTRACT_ADDRESS" variable')
 
 # DRS Service ID - possibly get this from database
-SERVICE_IDS = ['0xa2e73b1bae8003a768b7876e021838e060e36d5bf80bf425652ef9381fb2b7e1','0xa2e73b1bae8003a768b7876e021838e060e36d5bf80bf425652ef9381fb2b7e1']
+SERVICE_IDS = ['0x9426e04fe757749698e850c413f730c3970dc88e0d73661c4acc01f7f2d0de74','0xa2e73b1bae8003a768b7876e021838e060e36d5bf80bf425652ef9381fb2b7e1','0xa2e73b1bae8003a768b7876e021838e060e36d5bf80bf425652ef9381fb2b7e1']
 if not SERVICE_IDS:
     raise ValueError('You must have "SERVICE_IDS" variable')
 
@@ -24,7 +24,7 @@ if not SERVICE_IDS:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'drsdb',
+        'NAME': 'phusedb',
         'USER': 'drs',
         'PASSWORD': 'abcd12345',
         'HOST': 'localhost',

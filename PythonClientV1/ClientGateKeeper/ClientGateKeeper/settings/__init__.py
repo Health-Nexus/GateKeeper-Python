@@ -25,6 +25,7 @@ current = __name__
 
 for module_name in modules:
     try:
+        print("WTF MATE: ", current, module_name, modules, locals, globals)
         module = getattr(__import__(current, globals(), locals(), [module_name]), module_name)
     except ImportError as e:
         print('ERROR: Unable to import %s configuration: %s' % (module_name, e))

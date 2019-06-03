@@ -17,3 +17,11 @@ class Details(models.Model):
 
     def was_published_recently(self):
         return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
+
+
+class Accounts(models.Model):
+    phuse_number = models.CharField(max_length=200)
+    public_key = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.phuse_number

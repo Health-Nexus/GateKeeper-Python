@@ -25,7 +25,7 @@ SECRET_KEY = '!x+0hcf2=z%h5rtx^iffi@tb#mp+ln1-(6ja1yqv8c*f)diutb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -57,12 +57,12 @@ AUTHENTICATION_BACKENDS = (
         'django.contrib.auth.backends.ModelBackend',
 )
 
-
-CORS_ORIGIN_WHITELIST = (
-
-    'localhost:4200',
-    '127.0.0.1:4200'
-)
+CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_WHITELIST = (
+#
+#     'localhost:4200',
+#     '127.0.0.1:4200'
+# )
 
 
 ROOT_URLCONF = 'ClientGateKeeper.urls'

@@ -25,7 +25,7 @@
     5.  Install web3
         Mac:  pip install web3
     6.  Create Database or determine parameters for the code to handle the database. The code is setup for PSQL with a database called drsdb and user drs with  password abcd12345.  You will need to manually set that up.  Additionally we have it setup to handle data objects with the field as so account_number, name, details, days, pub_date.
-    7.  Database migration.  If you choose to use our database python manage.py migrate or, if there are issues to this being an early project, manually go in and create the tables.  This will load what ever tables you have into psql.  For other setups or downloading your DBs into django please review the Django manuals, but you can manually change the code in the file or setup a migration with 'un python manage.py makemigrations gatekeeper'.
+    7.  Database migration.  If you choose to use our database python manage.py migrate.
 
 # Running
     1.  To activate your virtual environment use the 'workon' command with the name of your environment.
