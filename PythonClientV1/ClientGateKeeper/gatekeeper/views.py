@@ -1,5 +1,6 @@
 
-from django.http import HttpResponse, JsonResponse, FileResponse
+from django.http import HttpResponse, JsonResponse, FileResponse, HttpResponseRedirect
+from django.shortcuts import render
 import hashlib
 from django.core import serializers
 import base64
@@ -17,6 +18,8 @@ import codecs
 from gatekeeper.models import Details, Accounts
 from django.forms.models import model_to_dict
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from .forms import UploadForm
 
 import requests
 
@@ -87,6 +90,7 @@ def data(request, address_id, signature, message_hash, parameter, key_hex):
         keyData=fContract.call().getKey(key_bytes)
         serviceFromKey = web3.fromAscii(keyData[4])
         phuse_number=Accounts.objects.get(public_key=address_id)
+        print(parameter, serviceFromKey, thisServices, owner, encode_hex(sha3(pubkey)[-20:]), address_id)
         if parameter == 'file' and serviceFromKey in thisServices and encode_hex(sha3(pubkey)[-20:]) == address_id and owner:
             module_dir = os.path.dirname(__file__)  # get current directory
             filename=module_dir+'/file/'+account_id
@@ -140,6 +144,46 @@ def register(request, address_id, signature, message_hash, phuse_number ):
             return JsonResponse({'status':'Success','message':'Account Registered'}, status=201)
         else:
             return JsonResponse({'status':'false','message':'Invalid user'}, status=500)
+    except Exception as inst:
+         print(type(inst))
+         print(inst.args)
+         print(inst)
+
+def handle_uploaded_file(f):
+    print('FILE: ', f)
+    with open('file/name.csv', 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
+@csrf_exempt
+def upload_file(request, address_id, signature, message_hash):
+    try:
+        #recover public key
+        r = int(signature[0:66], 16)
+        s = int(add_0x_prefix(signature[66:130]), 16)
+        v = int(add_0x_prefix(signature[130:132]), 16)
+        if v not in (27,28):
+            v += 27
+        pubkey = ecrecover_to_pub(decode_hex(message_hash), v, r, s)
+        #Get the service this key belongs too
+        if encode_hex(sha3(pubkey)[-20:]) == address_id:
+            if request.method == 'POST':
+                print('FILES: ', request.FILES)
+                form = UploadForm(request.POST, request.FILES)
+                print('form: ', form, form.is_valid())
+                if form.is_valid():
+                    form.save()
+                return JsonResponse({'status':'Success','message':'File Saved'}, status=201)
+                # form = UploadFileForm(request.POST, request.FILES)
+                # file_data = csv_file.read().decode("utf-8")
+                # print('FORM: ', form, form.is_valid())
+                # handle_uploaded_file(request.FILES['file'])
+                # if form.is_valid():
+                #     handle_uploaded_file(request.FILES['file'])
+                #     return JsonResponse({'status':'Success','message':'Account Registered'}, status=201)
+                # else:
+                #     form = UploadFileForm()
+                return render(request, 'upload.html', {'form': form})
     except Exception as inst:
          print(type(inst))
          print(inst.args)

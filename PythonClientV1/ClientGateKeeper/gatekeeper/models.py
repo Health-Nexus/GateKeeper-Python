@@ -25,3 +25,6 @@ class Accounts(models.Model):
 
     def __str__(self):
         return self.phuse_number
+
+class Upload(models.Model):
+    fileKey = models.FileField(upload_to="gatekeeper/file")

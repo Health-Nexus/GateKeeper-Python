@@ -21,7 +21,7 @@
         a. sudo apt-get install libssl-dev build-essential automake pkg-config libtool libffi-dev libgmp-dev libyaml-cpp-dev
         b. git clone https://github.com/ethereum/pyethereum/
         c. cd pyethereum
-        d. python setup.py install
+        d. pip install psycopg2
     5.  Install web3
         Mac:  pip install web3
     6.  Create Database or determine parameters for the code to handle the database. The code is setup for PSQL with a database called drsdb and user drs with  password abcd12345.  You will need to manually set that up.  Additionally we have it setup to handle data objects with the field as so account_number, name, details, days, pub_date.
